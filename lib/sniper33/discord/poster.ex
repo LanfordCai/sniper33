@@ -55,7 +55,7 @@ defmodule Sniper33.Discord.Poster do
   end
 
   defp push_1h_stats() do
-    Process.send_after(self(), :push_1h_stats, 10000)
+    Process.send_after(self(), :push_1h_stats, 60 * 60000)
   end
 
   defp order_by_net_value(stats) do
