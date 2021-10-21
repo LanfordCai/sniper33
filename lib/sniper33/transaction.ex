@@ -58,7 +58,7 @@ defmodule Sniper33.Transaction do
         Map.put(state, tx.from, %{
           value: value,
           seller_count: seller_count,
-          sell_value: value
+          sell_value: tx.value
         })
 
       %{
