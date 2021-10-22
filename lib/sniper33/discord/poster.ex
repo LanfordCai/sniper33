@@ -43,9 +43,11 @@ defmodule Sniper33.Discord.Poster do
         |> order_by_net_value()
         |> filter_out_stats()
 
-      latest_tweet_created_at = hd(tweets).created_at
-      content = Content.content(:sniper_stats, stats, latest_tweet_created_at)
-      Requester.post(webhook, content)
+      if !Enum.empty?(stats) do
+        latest_tweet_created_at = hd(tweets).created_at
+        content = Content.content(:sniper_stats, stats, latest_tweet_created_at)
+        Requester.post(webhook, content)
+      end
     else
       :ignore
     end
