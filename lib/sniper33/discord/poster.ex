@@ -27,6 +27,8 @@ defmodule Sniper33.Discord.Poster do
 
     push_1h_stats()
     Logger.info("[#{__MODULE__}] started!")
+    content = Content.content(:poster_started)
+    Requester.post(webhook, content)
     {:ok, Map.put(state, :webhook, webhook)}
   end
 

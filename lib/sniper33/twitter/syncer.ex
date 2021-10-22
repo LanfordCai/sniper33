@@ -5,6 +5,7 @@ defmodule Sniper33.Twitter.Syncer do
   require Logger
 
   alias Sniper33.Twitter.{Client, Tweet}
+  alias Sniper33.Discord.{Content, Requester}
 
   def start_link(user_id) when is_binary(user_id) do
     latest_tweet_id =
@@ -30,6 +31,11 @@ defmodule Sniper33.Twitter.Syncer do
   def init(state) do
     sync_tweets(interval())
     Logger.info("[#{__MODULE__}] started!")
+
+    webhook = Application.get_env(:sniper33, :discord_webhook)
+    content = Content.content(:tweet_syncer_started)
+    Requester.post(webhook, content)
+
     {:ok, state}
   end
 

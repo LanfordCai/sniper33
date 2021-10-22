@@ -6,6 +6,22 @@ defmodule Sniper33.Discord.Content do
   @green "6080391"
   @red "14964065"
 
+  def content(:poster_started) do
+    %{
+      "username" => "Sniper33🔥",
+      "avatar_url" => "#{@avatar_url}",
+      "content" => "Poster started"
+    }
+  end
+
+  def content(:tweet_syncer_started) do
+    %{
+      "username" => "Sniper33🔥",
+      "avatar_url" => "#{@avatar_url}",
+      "content" => "TweetSyncer started"
+    }
+  end
+
   def content(:sniper_stats, stats, latest_tweet_created_at) do
     embeds =
       Enum.map(stats, fn {symbol, stats, type} ->

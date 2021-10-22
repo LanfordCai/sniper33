@@ -15,7 +15,7 @@ defmodule Sniper33.Transaction do
   ]
 
   def parse_tweets(tweets) when is_list(tweets) do
-    txs = tweets |> Enum.map(&from_tweet(&1))
+    txs = tweets |> Enum.map(&from_tweet(&1)) |> Enum.reject(&is_nil(&1))
 
     Enum.reduce(txs, %{}, fn tx, state ->
       state
@@ -47,6 +47,9 @@ defmodule Sniper33.Transaction do
       tweet_id: tweet_id,
       tweet_created_at: created_at
     }
+  rescue
+    _ ->
+      nil
   end
 
   defp record_sell(state, tx) do
@@ -58,7 +61,8 @@ defmodule Sniper33.Transaction do
         Map.put(state, tx.from, %{
           value: value,
           seller_count: seller_count,
-          sell_value: tx.value
+          sell_value: tx.value,
+          links: [tx.link]
         })
 
       %{
@@ -67,12 +71,15 @@ defmodule Sniper33.Transaction do
         seller_count = info[:seller_count] || 0
         sell_value = Decimal.add(info[:sell_value] || Decimal.new(0), tx.value)
         value = Decimal.sub(old_value, tx.value)
+        old_links = info[:links] || []
+        new_links = [tx.link | old_links]
 
         new_info =
           info
           |> Map.put(:value, value)
           |> Map.put(:seller_count, seller_count + 1)
           |> Map.put(:sell_value, sell_value)
+          |> Map.put(:links, new_links)
 
         Map.put(state, tx.from, new_info)
     end
@@ -87,7 +94,8 @@ defmodule Sniper33.Transaction do
         Map.put(state, tx.to, %{
           value: value,
           buyer_count: buyer_count,
-          buy_value: value
+          buy_value: value,
+          links: [tx.link]
         })
 
       %{
@@ -96,12 +104,15 @@ defmodule Sniper33.Transaction do
         buyer_count = info[:buyer_count] || 0
         buy_value = Decimal.add(info[:buy_value] || Decimal.new(0), tx.value)
         value = Decimal.add(old_value, tx.value)
+        old_links = info[:links] || []
+        new_links = [tx.link | old_links]
 
         new_info =
           info
           |> Map.put(:value, value)
           |> Map.put(:buyer_count, buyer_count + 1)
           |> Map.put(:buy_value, buy_value)
+          |> Map.put(:links, new_links)
 
         Map.put(state, tx.to, new_info)
     end
