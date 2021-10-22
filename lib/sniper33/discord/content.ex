@@ -45,7 +45,7 @@ defmodule Sniper33.Discord.Content do
       end)
 
     %{
-      "username" => "DefiSniper Stats 🔥",
+      "username" => "Sniper33🔥",
       "avatar_url" => "#{@avatar_url}",
       "content" =>
         "Lastest Tweet Created At: #{NaiveDateTime.to_string(latest_tweet_created_at)}(UTC)",

@@ -70,17 +70,19 @@ defmodule Sniper33.Discord.Poster do
     )
   end
 
-  @stable_coins ["USDC", "USDT", "DAI", "UST"]
+  @common_coins ["USDC", "USDT", "DAI", "UST", "stETH", "ETH", "BTC", "WBTC", "WETH"]
   defp filter_out_stats(raw_stats) when is_list(raw_stats) do
     stats =
       Enum.reject(raw_stats, fn {symbol, _stats} ->
-        symbol in @stable_coins
+        symbol in @common_coins
       end)
 
     gainers =
       stats
       |> Enum.take(5)
-      |> Enum.filter(&Decimal.positive?(elem(&1, 1).value))
+      |> Enum.filter(fn {_symbol, stats} ->
+        Decimal.compare(stats.value, 1_000_000) != :lt or stats.buyer_count >= 3
+      end)
       |> Enum.map(fn {symbol, stats} ->
         {symbol, stats, :gainer}
       end)
@@ -89,7 +91,9 @@ defmodule Sniper33.Discord.Poster do
       stats
       |> Enum.reverse()
       |> Enum.take(5)
-      |> Enum.filter(&(!Decimal.positive?(elem(&1, 1).value)))
+      |> Enum.filter(fn {_symbol, stats} ->
+        Decimal.compare(stats.value, -1_000_000) != :gt or stats.seller_count >= 3
+      end)
       |> Enum.map(fn {symbol, stats} ->
         {symbol, stats, :loser}
       end)
