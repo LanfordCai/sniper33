@@ -55,6 +55,11 @@ defmodule Sniper33.Discord.Content do
               "name" => "Outflow(USD)",
               "value" => "#{Decimal.to_string(stats[:sell_value] || Decimal.new(0))}",
               "inline" => true
+            },
+            %{
+              "name" => "Links",
+              "value" => Enum.join(stats.links, "\n"),
+              "line" => true
             }
           ]
         }
