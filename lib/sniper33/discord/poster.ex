@@ -85,7 +85,8 @@ defmodule Sniper33.Discord.Poster do
       stats
       |> Enum.take(5)
       |> Enum.filter(fn {_symbol, stats} ->
-        Decimal.compare(stats.value, 1_000_000) != :lt or stats.buyer_count >= 3
+        buyer_count = stats[:buyer_count] || 0
+        Decimal.compare(stats.value, 1_000_000) != :lt or buyer_count >= 3
       end)
       |> Enum.map(fn {symbol, stats} ->
         {symbol, stats, :gainer}
@@ -96,7 +97,8 @@ defmodule Sniper33.Discord.Poster do
       |> Enum.reverse()
       |> Enum.take(5)
       |> Enum.filter(fn {_symbol, stats} ->
-        Decimal.compare(stats.value, -1_000_000) != :gt or stats.seller_count >= 3
+        seller_count = stats[:seller_count] || 0
+        Decimal.compare(stats.value, -1_000_000) != :gt or seller_count >= 3
       end)
       |> Enum.map(fn {symbol, stats} ->
         {symbol, stats, :loser}
