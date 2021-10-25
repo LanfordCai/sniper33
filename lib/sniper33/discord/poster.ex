@@ -18,22 +18,25 @@ defmodule Sniper33.Discord.Poster do
 
   @impl true
   def init(state) do
-    webhook = Application.get_env(:sniper33, :discord_webhook)
+    webhooks =
+      Application.get_env(:sniper33, :discord_webhooks)
+      |> Enum.reject(&is_nil(&1))
 
-    if is_nil(webhook) do
-      Logger.error("[#{__MODULE__}] empty webhook!")
-      raise "Empty Webhook!"
+    if Enum.empty?(webhooks) do
+      Logger.error("[#{__MODULE__}] empty webhooks!")
+      raise "Empty Webhooks!"
     end
 
     push_1h_stats()
     Logger.info("[#{__MODULE__}] started!")
     content = Content.content(:poster_started)
-    Requester.post(webhook, content)
-    {:ok, Map.put(state, :webhook, webhook)}
+    Enum.each(webhooks, &Requester.post(&1, content))
+
+    {:ok, Map.put(state, :webhooks, webhooks)}
   end
 
   @impl true
-  def handle_info(:push_1h_stats, %{user_id: user_id, webhook: webhook} = state) do
+  def handle_info(:push_1h_stats, %{user_id: user_id, webhooks: webhooks} = state) do
     Logger.info("[#{__MODULE__}] ready to push stats")
 
     tweets = user_id |> Tweet.in_hours(1)
@@ -48,7 +51,7 @@ defmodule Sniper33.Discord.Poster do
       if !Enum.empty?(stats) do
         latest_tweet_created_at = hd(tweets).created_at
         content = Content.content(:sniper_stats, stats, latest_tweet_created_at)
-        Requester.post(webhook, content)
+        Enum.each(webhooks, &Requester.post(&1, content))
       end
     else
       :ignore

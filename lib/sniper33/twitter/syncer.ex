@@ -32,9 +32,9 @@ defmodule Sniper33.Twitter.Syncer do
     sync_tweets(interval())
     Logger.info("[#{__MODULE__}] started!")
 
-    webhook = Application.get_env(:sniper33, :discord_webhook)
+    webhooks = Application.get_env(:sniper33, :discord_webhooks)
     content = Content.content(:tweet_syncer_started)
-    Requester.post(webhook, content)
+    Enum.each(webhooks, &Requester.post(&1, content))
 
     {:ok, state}
   end
