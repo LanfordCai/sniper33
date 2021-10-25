@@ -1,15 +1,16 @@
 # Sniper33
 
-To start your Phoenix server:
+To start your sniper33:
+
+  * export environment variable DATABASE_URL, for example: `ecto://USER:PASS@HOST/DATABASE`
+  * export environment variable SNIPER33_TWITTER_TOKEN, you can get it from twitter developer account app
+  * export environment variable SNIPER33_TWITTER_SYNC_INTERVAL, recommand set it to "180000", which means sync tweets per 3 mins
+  * export environment variable SNIPER33_DISCORD_WEBHOOK, which is your discord webhook url
 
   * Install dependencies with `mix deps.get`
   * Create and migrate your database with `mix ecto.setup`
   * Install Node.js dependencies with `npm install` inside the `assets` directory
   * Start Phoenix endpoint with `mix phx.server`
-
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
-
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
 
 ## Learn more
 
